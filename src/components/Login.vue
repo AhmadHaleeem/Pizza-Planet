@@ -1,7 +1,8 @@
 <template>
     <div class="row">
-        <div>
-            <p>Logged in as: {{ currentUser }} </p>
+        <div >
+            <p v-if="!currentUser">Please login to continue</p>
+            <p v-else>Logged in as: {{ currentUser }} </p>
         </div>
         <form>
             <div class="form-group">
@@ -65,3 +66,9 @@
         }
     }
 </script>
+
+<style scoped>
+    form {
+        margin:20px 0;
+    }
+</style>

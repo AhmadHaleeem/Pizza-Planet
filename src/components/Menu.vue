@@ -9,13 +9,13 @@
                     <th>Add to basket</th>
                 </tr>
                 </thead>
-                <tbody v-for="item in getMenuItems">
+                <tbody v-for="item in getMenuItems" :key="item['.key']">
                 <tr>
                     <td><strong>{{ item.name }}</strong></td>
                 </tr>
                 <tr v-for="option in item.options">
                     <td>{{ option.size }}</td>
-                    <td>{{ option.price }}</td>
+                    <td>{{ option.price | currency }}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-success" type="button" @click="addToBasket(item, option)">
                             +
@@ -44,17 +44,17 @@
                             <button class="btn btn-sm" type="button" @click="increaseQuantity(item)">+</button>
                         </td>
                         <td>{{ item.name }} {{ item.size }}</td>
-                        <td>{{ item.price * item.quantity }}</td>
+                        <td>{{ item.price * item.quantity | currency }}</td>
                     </tr>
                     </tbody>
                 </table>
 
-                <p>Order total: </p>
+                <p>Order total: {{ total | currency }}</p>
                 <button class="btn btn-success btn-block" @click="addNewOrder">Place Order</button>
 
             </div>
             <div v-else>
-                <p>{{ basketText }}</p> {{ this.$store.state.orders }}
+                <p>{{ basketText }}</p>
             </div>
         </div>
 
@@ -63,6 +63,8 @@
 
 <script>
     import {mapGetters} from 'vuex'
+    import {dbOrdersRef} from '../firebaseConfig'
+
     export default {
         data() {
             return {
@@ -73,7 +75,15 @@
         computed: {
             ...mapGetters([
                 'getMenuItems'
-            ])
+            ]),
+            total() {
+                var totalCost = 0
+                for(var items in this.basket) {
+                    var individualItems = this.basket[items]
+                    totalCost += individualItems.quantity * individualItems.price
+                }
+                return totalCost
+            }
 //            getMenuItems() {
 ////                return this.$store.state.menuItems
 //                return this.$store.getters.getMenuItems
@@ -103,7 +113,8 @@
                 }
             },
             addNewOrder() {
-                this.$store.commit('addOrder', this.basket)
+//                this.$store.commit('addOrder', this.basket)
+                dbOrdersRef.push(this.basket)
                 this.basket = []
                 this.basketText = 'Thank you, your order has been placed! :)'
             }

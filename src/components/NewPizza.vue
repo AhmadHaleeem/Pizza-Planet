@@ -75,6 +75,12 @@
         methods: {
             addMenuItem() {
                 dbMenuRef.push(this.newPizza)
+                this.newPizza.name = ''
+                this.newPizza.description = ''
+                this.newPizza.options[0].size = ''
+                this.newPizza.options[0].price = ''
+                this.newPizza.options[1].size = ''
+                this.newPizza.options[1].price = ''
             }
         }
     }
