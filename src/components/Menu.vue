@@ -50,11 +50,11 @@
                 </table>
 
                 <p>Order total: </p>
-                <button class="btn btn-success btn-block">Place Order</button>
+                <button class="btn btn-success btn-block" @click="addNewOrder">Place Order</button>
 
             </div>
             <div v-else>
-                <p>{{ basketText }}</p>
+                <p>{{ basketText }}</p> {{ this.$store.state.orders }}
             </div>
         </div>
 
@@ -62,47 +62,23 @@
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
     export default {
         data() {
             return {
                 basket: [],
                 basketText: 'Your basket is empty',
-                getMenuItems: {
-                    1: {
-                        'name': 'Sicilian Meatlovers',
-                        'description': "Als je een eindbaas bent, verdien je het beste di tutti. Daarom is ‘ie terug van weggeweest; de Sicilian Meatlovers! Een pizza met pepperoni, ham, goudeerlijke chorizo, uber-rijke tomatensaus, romige mozzarella, ,frispittige lente-uitjes en knoflookolie op de rand.",
-                        'options': [{
-                            'size': 9,
-                            'price': 7.95
-                        }, {
-                            'size': 12,
-                            'price': 12.95
-                        }]
-                    },
-                    2: {
-                        'name': 'Sea Shepherd Vegan Shoarma Pizza',
-                        'description': "De shoarma is heerlijk veganistisch. En verder zit er op deze pizza: tomatensaus, rode ui, romige vegan knoflook swirl en sublieme vegan kaas maken hem verantwoord en goddelijk af. Van elke pizza gaat één euro naar de stoere reddingsacties van Sea Shepherd.",
-                        'options': [{
-                            'size': 9,
-                            'price': 7.95
-                        }, {
-                            'size': 12,
-                            'price': 12.95
-                        }]
-                    },
-                    3: {
-                        'name': 'Margherita pizza',
-                        'description': "Pizza met tomatensaus en mozzarella. Met boterzachte knoflookolie op de rand van de pizza. Tip! Ook lekker met oregano.",
-                        'options': [{
-                            'size': 9,
-                            'price': 7.95
-                        }, {
-                            'size': 12,
-                            'price': 12.95
-                        }]
-                    },
-                }
             }
+        },
+        computed: {
+            ...mapGetters([
+                'getMenuItems'
+            ])
+//            getMenuItems() {
+////                return this.$store.state.menuItems
+//                return this.$store.getters.getMenuItems
+//            },
+
         },
         methods: {
             addToBasket(item, option) {
@@ -117,7 +93,7 @@
                 this.basket.splice(this.basket.indexOf(item), 1)
             },
             increaseQuantity(item) {
-              item.quantity++
+                item.quantity++
             },
             decreaseQuantity(item) {
                 item.quantity--
@@ -125,6 +101,11 @@
                 if (item.quantity === 0) {
                     this.removeFromBasket(item)
                 }
+            },
+            addNewOrder() {
+                this.$store.commit('addOrder', this.basket)
+                this.basket = []
+                this.basketText = 'Thank you, your order has been placed! :)'
             }
         }
     }
